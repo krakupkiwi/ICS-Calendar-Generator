@@ -60,8 +60,10 @@ router.get('/export/ics', (req, res) => {
   const filename = filePart ? `calendar-${filePart.toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ics` : 'calendar.ics';
 
   res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
-  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
   res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Pragma', 'no-cache');
   res.send(ics);
 });
 
