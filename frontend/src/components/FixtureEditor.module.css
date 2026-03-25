@@ -1,0 +1,315 @@
+.wrapper {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.loading {
+  padding: var(--space-8);
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+}
+
+.errorBanner {
+  background: var(--danger-dim);
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-5);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.errorBanner code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.rowError {
+  background: var(--danger-dim);
+  border-bottom: 1px solid var(--danger);
+  color: var(--danger);
+  padding: var(--space-3) var(--space-5);
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead tr {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+
+.table th {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.table tbody tr:hover {
+  background: var(--bg-elevated);
+}
+
+.firstInGroup td {
+  border-top: 2px solid var(--border);
+}
+
+.table tbody tr:first-child td {
+  border-top: none;
+}
+
+.emptyCell {
+  text-align: center;
+  color: var(--text-muted);
+  padding: var(--space-10) var(--space-4) !important;
+  font-size: 0.9375rem;
+}
+
+/* Date column */
+.dateVal {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.dateDitto {
+  color: var(--text-muted);
+  padding-left: var(--space-2);
+}
+
+/* Round */
+.roundCell {
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+/* Team cells */
+.teamCell {
+  white-space: nowrap;
+}
+
+.homeTeam {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.venueCell {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* (kept for backward compat display of old rows) */
+.locationTag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.home {
+  background: rgba(63, 185, 80, 0.15);
+  color: var(--accent);
+}
+
+.away {
+  background: rgba(88, 166, 255, 0.15);
+  color: var(--grade-1);
+}
+
+.neutral {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+/* UID hint in column header */
+.uidHint {
+  font-size: .6rem;
+  background: rgba(63,185,80,.15);
+  color: var(--accent);
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-left: 4px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  vertical-align: middle;
+}
+
+/* Category badge */
+.catBadge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  background: rgba(88,166,255,.12);
+  color: #79c0ff;
+  border: 1px solid rgba(88,166,255,.25);
+  white-space: nowrap;
+}
+
+.catEmpty {
+  color: var(--text-muted);
+  font-size: .8125rem;
+}
+
+/* Grade badge */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--badge-color, var(--text-secondary));
+  background: rgba(var(--badge-color-rgb, 139, 148, 158), 0.12);
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+/* Time */
+.timeCell {
+  white-space: nowrap;
+}
+
+.time {
+  font-weight: 700;
+  color: var(--amber);
+  font-variant-numeric: tabular-nums;
+}
+
+.tbc {
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 0.8125rem;
+}
+
+/* Actions */
+.actionsCol {
+  width: 80px;
+}
+
+.actionsCell {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.btnEdit, .btnDelete, .btnSave, .btnCancel {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  transition: background 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+.btnEdit {
+  color: var(--text-secondary);
+}
+.btnEdit:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+.btnDelete {
+  color: var(--text-muted);
+}
+.btnDelete:hover { background: var(--danger-dim); color: var(--danger); }
+
+.btnSave {
+  color: var(--accent);
+  font-size: 1rem;
+}
+.btnSave:hover { background: var(--accent-glow); }
+.btnSave:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btnCancel {
+  color: var(--text-muted);
+}
+.btnCancel:hover { background: var(--bg-hover); color: var(--text-primary); }
+.btnCancel:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Edit row */
+.editRow {
+  background: rgba(88, 166, 255, 0.05) !important;
+  border-top: 1px solid rgba(88, 166, 255, 0.2) !important;
+}
+
+.editRow td {
+  padding: var(--space-2) var(--space-2);
+}
+
+.editRow input,
+.editRow select {
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Add bar */
+.addBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+  background: var(--bg-elevated);
+}
+
+.btnAdd {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btnAdd:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+.addHint {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.rowCount {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}

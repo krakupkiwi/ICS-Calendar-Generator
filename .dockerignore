@@ -1,0 +1,32 @@
+# Used by the frontend build (context = project root)
+# Excludes everything not needed to build the React app
+
+# Backend — not needed for frontend build
+backend/
+
+# Frontend node_modules — reinstalled inside the builder stage
+frontend/node_modules/
+frontend/dist/
+
+# Data
+data/
+backend/data/
+
+# Dev/editor files
+.git/
+.gitignore
+*.md
+docs/
+examples/
+portable-tool/
+shared/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

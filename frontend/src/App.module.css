@@ -1,0 +1,243 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  flex: 1;
+  padding: var(--space-6) var(--space-4);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Grouping bar */
+.groupingBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.groupingLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.groupingOptions {
+  display: flex;
+  gap: 2px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+}
+
+.groupingBtn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  border-radius: 4px;
+  padding: 3px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.groupingBtn:hover {
+  background: var(--bg-hover, rgba(255,255,255,0.05));
+  color: var(--text-primary);
+}
+
+.groupingActive {
+  background: var(--accent-dim) !important;
+  color: var(--accent) !important;
+}
+
+.groupingBarLocked .groupingOptions {
+  opacity: 0.6;
+}
+
+.lockBtn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.lockBtn:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-elevated);
+}
+
+.lockBtnOn {
+  border-color: var(--accent-dim);
+  background: rgba(63, 185, 80, 0.08);
+}
+
+.lockBtnOn:hover {
+  border-color: var(--danger);
+  background: rgba(248, 81, 73, 0.08);
+}
+
+.groupingHint {
+  font-size: 0.72rem;
+  color: var(--amber);
+  flex: 1;
+}
+
+.groupingBarLocked .groupingHint {
+  color: var(--accent);
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-5);
+  padding-bottom: 0;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+  letter-spacing: 0.01em;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tabActive {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.tabSpacer {
+  flex: 1;
+}
+
+.fixtureCount {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: var(--space-2) 0;
+}
+
+/* Panel */
+.panel {}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: var(--space-6);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+}
+
+/* Help / Guide */
+.guide {
+  max-width: 780px;
+  color: var(--text-primary);
+}
+
+.guide h2 {
+  font-size: 1.375rem;
+  font-weight: 700;
+  margin-bottom: var(--space-6);
+  color: var(--text-primary);
+}
+
+.guide section {
+  margin-bottom: var(--space-8);
+}
+
+.guide h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.guide p {
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  margin-bottom: var(--space-3);
+  line-height: 1.7;
+}
+
+.guide ul, .guide ol {
+  padding-left: var(--space-6);
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  margin-bottom: var(--space-3);
+}
+
+.guide li strong {
+  color: var(--text-primary);
+}
+
+.guide pre {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--accent);
+  margin: var(--space-3) 0;
+  overflow-x: auto;
+}
+
+.guide code {
+  background: var(--bg-elevated);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--amber);
+}
+
+.tipBox {
+  background: rgba(63, 185, 80, 0.05);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+}
+
+.tipBox h3 {
+  margin-bottom: var(--space-3);
+}

@@ -1,0 +1,123 @@
+/* =========================================
+   RUGBY LEAGUE CALENDAR — DESIGN SYSTEM
+   "Stadium Dark" Theme
+   ========================================= */
+
+/* --- Design Tokens --- */
+:root {
+  /* Background scale */
+  --bg-base:       #0d1117;
+  --bg-surface:    #161b22;
+  --bg-elevated:   #21262d;
+  --bg-hover:      #292f36;
+
+  /* Border */
+  --border:        #30363d;
+  --border-focus:  #58a6ff;
+
+  /* Accent — field green */
+  --accent:        #3fb950;
+  --accent-dim:    #238636;
+  --accent-glow:   rgba(63, 185, 80, 0.15);
+
+  /* Highlight — amber (kick-off times) */
+  --amber:         #f0883e;
+  --amber-dim:     rgba(240, 136, 62, 0.15);
+
+  /* Danger */
+  --danger:        #f85149;
+  --danger-dim:    rgba(248, 81, 73, 0.15);
+
+  /* Text */
+  --text-primary:  #e6edf3;
+  --text-secondary:#8b949e;
+  --text-muted:    #484f58;
+
+  /* Grade badge colours */
+  --grade-1:       #58a6ff;   /* First Grade — blue */
+  --grade-2:       #bc8cff;   /* Reserve Grade — purple */
+  --grade-3:       #3fb950;   /* U/18 — green */
+  --grade-4:       #f0883e;   /* Women's — amber */
+  --grade-5:       #ffa657;   /* U/16 — orange */
+  --grade-6:       #79c0ff;   /* U/14 — light blue */
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius:    8px;
+  --radius-lg: 12px;
+
+  /* Shadow */
+  --shadow: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.6);
+}
+
+/* --- Reset & Base --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+button {
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: var(--font-sans);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.875rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+/* --- Scrollbar --- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }

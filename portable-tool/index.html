@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sports ICS Generator — Portable Tool</title>
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --bg:         #0d1117;
+      --surface:    #161b22;
+      --elevated:   #21262d;
+      --hover:      #292f36;
+      --border:     #30363d;
+      --accent:     #3fb950;
+      --accent-dim: #238636;
+      --amber:      #f0883e;
+      --danger:     #f85149;
+      --text:       #e6edf3;
+      --text2:      #8b949e;
+      --text3:      #484f58;
+      --blue:       #58a6ff;
+      --r:          8px;
+      --r-sm:       4px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    a { color: var(--accent); }
+    input, select, textarea {
+      background: var(--elevated); color: var(--text); border: 1px solid var(--border);
+      border-radius: var(--r-sm); padding: 6px 10px; font-size: .875rem; font-family: inherit;
+      outline: none; transition: border-color .15s;
+    }
+    input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(88,166,255,.1); }
+    button { font-family: inherit; cursor: pointer; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ─── Header ─── */
+    header {
+      background: linear-gradient(180deg,#161b22 0%,#0d1117 100%);
+      border-bottom: 2px solid var(--accent-dim);
+      padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,.5);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-icon { font-size: 2rem; }
+    .brand-name { font-size: 1.125rem; font-weight: 700; }
+    .brand-sub  { font-size: .7rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+    .portable-badge {
+      background: rgba(240,136,62,.15); color: var(--amber); border: 1px solid rgba(240,136,62,.3);
+      border-radius: 20px; padding: 2px 10px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+    }
+
+    /* ─── Main ─── */
+    main { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
+
+    /* ─── Card ─── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 20px; overflow: hidden; }
+    .card-head {
+      background: var(--elevated); padding: 10px 16px;
+      display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);
+    }
+    .card-head h2 { font-size: .875rem; font-weight: 700; }
+    .card-head .step {
+      background: var(--accent-dim); color: var(--accent); border-radius: 50%;
+      width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 800; flex-shrink: 0;
+    }
+    .card-body { padding: 16px; }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--r-sm); font-size: .8125rem; font-weight: 600;
+      border: 1px solid transparent; transition: all .15s; white-space: nowrap;
+    }
+    .btn-accent  { background: var(--accent-dim); color: var(--accent); border-color: var(--accent-dim); }
+    .btn-accent:hover  { background: var(--accent); color: #000; }
+    .btn-blue    { background: rgba(88,166,255,.15); color: var(--blue); border-color: rgba(88,166,255,.3); }
+    .btn-blue:hover    { background: var(--blue); color: #000; }
+    .btn-secondary { background: var(--elevated); color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background: var(--hover); }
+    .btn-danger  { background: rgba(248,81,73,.12); color: var(--danger); border-color: rgba(248,81,73,.3); }
+    .btn-danger:hover  { background: var(--danger); color: #fff; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; }
+
+    /* ─── Club name row ─── */
+    .club-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media(max-width:600px) { .club-grid { grid-template-columns: 1fr; } }
+    .field-group { display: flex; flex-direction: column; gap: 4px; }
+    .field-label { font-size: .7rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+    .uid-preview {
+      margin-top: 10px;
+      background: var(--elevated); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 8px 12px; font-family: monospace; font-size: .8rem; color: var(--accent);
+    }
+    .uid-preview span { color: var(--amber); }
+
+    /* ─── CSV area ─── */
+    .csv-area { width: 100%; height: 180px; resize: vertical; font-family: monospace; font-size: .8125rem; line-height: 1.5; }
+    .csv-hint  { font-size: .75rem; color: var(--text2); margin-top: 6px; }
+    .csv-hint code { background: var(--elevated); padding: 1px 5px; border-radius: 3px; font-size: .75rem; color: var(--amber); }
+    .drop-zone {
+      border: 2px dashed var(--border); border-radius: var(--r); padding: 24px; text-align: center;
+      cursor: pointer; transition: border-color .15s, background .15s; font-size: .875rem; color: var(--text2); margin-bottom: 12px;
+    }
+    .drop-zone:hover, .drop-zone.over { border-color: var(--accent); background: rgba(63,185,80,.05); color: var(--text); }
+
+    /* ─── Table ─── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+    thead tr { background: var(--elevated); border-bottom: 1px solid var(--border); }
+    th { padding: 8px 10px; text-align: left; font-size: .65rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .07em; white-space: nowrap; }
+    .th-uid { color: var(--accent); }
+    td { padding: 6px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:hover { background: var(--elevated); }
+    .td-del { text-align: right; white-space: nowrap; }
+    .btn-del { background: transparent; border: none; color: var(--text3); cursor: pointer; padding: 3px 6px; border-radius: 3px; font-size: .875rem; transition: color .15s, background .15s; }
+    .btn-del:hover { color: var(--danger); background: rgba(248,81,73,.1); }
+    .time-val { font-weight: 700; color: var(--amber); }
+    .cat-badge {
+      display: inline-block; padding: 1px 8px; border-radius: 20px; font-size: .68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .06em;
+      background: rgba(88,166,255,.1); color: #79c0ff; border: 1px solid rgba(88,166,255,.2);
+    }
+    .grade-badge { display: inline-block; padding: 1px 7px; border-radius: 4px; font-size: .7rem; font-weight: 600; border: 1px solid currentColor; }
+    .loc-home { color: var(--accent); }
+    .loc-away { color: var(--blue); }
+
+    /* ─── Add row form ─── */
+    .add-form {
+      display: grid;
+      grid-template-columns: 130px 110px 1fr 110px 120px 140px 80px auto;
+      gap: 6px; align-items: start; padding: 10px 12px;
+      background: rgba(88,166,255,.04); border-top: 1px solid rgba(88,166,255,.15);
+    }
+    .add-form input, .add-form select { width: 100%; font-size: .8rem; padding: 5px 7px; }
+    @media(max-width:900px) { .add-form { grid-template-columns: 1fr 1fr 1fr; } }
+
+    /* ─── Status ─── */
+    .banner { padding: 8px 14px; border-radius: var(--r-sm); font-size: .8125rem; font-weight: 500; margin-bottom: 14px; }
+    .banner-ok  { background: rgba(63,185,80,.1); color: var(--accent); border: 1px solid var(--accent-dim); }
+    .banner-err { background: rgba(248,81,73,.1); color: var(--danger); border: 1px solid rgba(248,81,73,.3); }
+
+    /* ─── Footer ─── */
+    footer { text-align: center; padding: 24px; font-size: .75rem; color: var(--text3); border-top: 1px solid var(--border); margin-top: 16px; }
+
+    /* ─── Utility ─── */
+    .flex { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .mt8 { margin-top: 8px; }
+    .mt12 { margin-top: 12px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-icon">📅</span>
+    <div>
+      <div class="brand-name">Sports ICS Generator</div>
+      <div class="brand-sub">Portable — No install · Works offline · Any sport</div>
+    </div>
+  </div>
+  <span class="portable-badge">🖥 Standalone Tool</span>
+</header>
+
+<main>
+  <div id="status-area"></div>
+
+  <!-- Step 1: Club & Calendar Settings -->
+  <div class="card">
+    <div class="card-head">
+      <span class="step">1</span>
+      <h2>Club / Organisation Settings</h2>
+    </div>
+    <div class="card-body">
+      <div class="club-grid">
+        <div class="field-group">
+          <label class="field-label" for="clubName">Club / Calendar Name</label>
+          <input type="text" id="clubName" placeholder="e.g. North Beach FC" oninput="updateUIDPreview()" />
+          <p class="csv-hint" style="margin-top:4px">Shown as the calendar name in Apple Calendar, Google Calendar, Outlook.</p>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="clubSlugInput">Club Identifier (for event IDs)</label>
+          <input type="text" id="clubSlugInput" placeholder="auto-generated from name" readonly
+            style="color:var(--text2);cursor:default" />
+          <p class="csv-hint" style="margin-top:4px">Auto-derived from club name. Used in ICS event UIDs.</p>
+        </div>
+      </div>
+      <div class="uid-preview" id="uidPreview">
+        fixture-YYYY-MM-DD-<span>category</span>@<span>clubcal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Import -->
+  <div class="card">
+    <div class="card-head">
+      <span class="step">2</span>
+      <h2>Import or Paste Fixtures</h2>
+    </div>
+    <div class="card-body">
+      <div class="drop-zone" id="dropZone">
+        📂 Drop a CSV file here, or click to browse
+        <input type="file" id="csvFile" accept=".csv,text/csv" class="hidden" />
+      </div>
+      <p class="csv-hint" style="margin-bottom:6px">Or paste CSV:</p>
+      <textarea class="csv-area" id="csvInput"
+        placeholder="Date,Round,Opponent,Location,Category,Grade,Time&#10;2026-05-02,Round 4,Wests,Home,Seniors,First Grade,15:00&#10;2026-05-02,Round 4,Wests,Home,Seniors,Reserve Grade,13:00&#10;2026-05-02,Round 4,Wests,Home,Womens,Womens League Tag,11:00"></textarea>
+      <div class="csv-hint">
+        Columns: <code>Date</code> <code>Round</code> <code>Opponent</code> <code>Location</code>
+        <code>Category</code> <code>Grade</code> <code>Time</code>
+        — <code>Category</code> is optional but recommended (e.g. Seniors, Juniors, Womens)
+      </div>
+      <div class="flex mt12">
+        <button class="btn btn-blue" onclick="importCSV()">📥 Load CSV</button>
+        <button class="btn btn-secondary" onclick="loadExample()">Load Example</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Fixture Table -->
+  <div class="card">
+    <div class="card-head">
+      <span class="step">3</span>
+      <h2>Fixtures</h2>
+      <span id="rowCount" style="font-size:.75rem;color:var(--text2);margin-left:auto"></span>
+    </div>
+    <div class="table-wrap">
+      <table id="fixtureTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Round</th>
+            <th>Opponent</th>
+            <th>Location</th>
+            <th class="th-uid" title="Used in ICS event UID — groups rows into one calendar event">Category ← UID</th>
+            <th>Grade / Competition</th>
+            <th>Kick-off</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="fixtureBody">
+          <tr id="emptyRow">
+            <td colspan="8" style="text-align:center;color:var(--text3);padding:32px">
+              No fixtures loaded. Import a CSV or add rows below.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Add row form -->
+      <div class="add-form" id="addForm">
+        <input type="date" id="newDate" />
+        <input type="text" id="newRound" placeholder="Round 5" />
+        <input type="text" id="newOpponent" placeholder="Opponent *" />
+        <select id="newLocation">
+          <option value="Home">Home</option>
+          <option value="Away">Away</option>
+          <option value="Neutral">Neutral</option>
+        </select>
+        <select id="newCategory">
+          <option value="">No category…</option>
+          <option>Seniors</option>
+          <option>Reserves</option>
+          <option>Juniors</option>
+          <option>Womens</option>
+          <option>Masters</option>
+          <option>Open Age</option>
+          <option>Touch</option>
+          <option value="__custom__">Custom…</option>
+        </select>
+        <select id="newGrade">
+          <option value="">Grade (optional)…</option>
+          <option>First Grade</option>
+          <option>Reserve Grade</option>
+          <option>A Grade</option>
+          <option>B Grade</option>
+          <option>U/18</option>
+          <option>U/16</option>
+          <option>U/14</option>
+          <option>U/12</option>
+          <option>Womens League Tag</option>
+          <option>Womens Open</option>
+          <option>Masters 35s</option>
+          <option>Touch Football</option>
+        </select>
+        <input type="time" id="newTime" />
+        <button class="btn btn-accent" onclick="addRow()">+ Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 4: Download -->
+  <div class="card">
+    <div class="card-head">
+      <span class="step">4</span>
+      <h2>Download</h2>
+    </div>
+    <div class="card-body">
+      <div class="flex">
+        <button class="btn btn-accent" onclick="downloadICS()">📅 Download calendar.ics</button>
+        <button class="btn btn-secondary" onclick="downloadCSV()">⬇ Export fixtures.csv</button>
+        <button class="btn btn-danger" onclick="clearAll()">🗑 Clear All</button>
+      </div>
+      <p class="csv-hint mt8">
+        Import <code>calendar.ics</code> into Apple Calendar, Google Calendar, or Outlook.
+        To create a subscribable link, upload to GitHub or Dropbox and share the raw URL.
+      </p>
+    </div>
+  </div>
+
+  <!-- Help -->
+  <details class="card" style="cursor:pointer">
+    <summary style="padding:12px 16px;font-size:.875rem;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px">
+      ❓ How to use — CSV format — UID explained
+    </summary>
+    <div class="card-body" style="border-top:1px solid var(--border)">
+      <p style="color:var(--text2);font-size:.875rem;line-height:1.8;margin-bottom:10px">
+        <strong style="color:var(--text)">Standalone tool</strong> — runs entirely in your browser. No internet needed after loading. Works for any sport.
+      </p>
+      <p style="color:var(--text2);font-size:.875rem;line-height:1.8;margin-bottom:10px">
+        <strong style="color:var(--text)">CSV format:</strong>
+      </p>
+      <code style="display:block;background:var(--elevated);padding:8px 12px;border-radius:var(--r-sm);font-size:.8rem;color:var(--accent);margin-bottom:10px">Date,Round,Opponent,Location,Category,Grade,Time<br>
+2026-05-02,Round 4,Wests,Home,Seniors,First Grade,15:00<br>
+2026-05-02,Round 4,Wests,Home,Womens,Womens League Tag,11:00<br>
+2026-05-09,Round 5,Norths,Away,Juniors,U/18,09:30</code>
+      <p style="color:var(--text2);font-size:.875rem;line-height:1.8;margin-bottom:10px">
+        <strong style="color:var(--text)">Category</strong> (optional) — groups rows into calendar events and forms the UID.<br>
+        Examples: <code>Seniors</code>, <code>Juniors</code>, <code>Womens</code>, <code>Masters</code>, <code>U/12s</code><br>
+        All rows with the same <strong>Date + Category</strong> become <strong>one calendar event</strong>.<br>
+        If Category is empty, the Grade field is used instead.
+      </p>
+      <p style="color:var(--text2);font-size:.875rem;line-height:1.8;margin-bottom:4px">
+        <strong style="color:var(--text)">Stable UIDs</strong> — event IDs use your club slug + category so re-exporting updates existing subscribed calendars without creating duplicates:<br>
+      </p>
+      <code style="display:block;background:var(--elevated);padding:6px 12px;border-radius:var(--r-sm);font-size:.8rem;color:var(--amber)">fixture-2026-05-02-seniors@northbeachfccal</code>
+    </div>
+  </details>
+</main>
+
+<footer>
+  Sports ICS Generator · Standalone portable tool · No data sent anywhere · 100% offline
+</footer>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let rows = [];
+let nextId = 1;
+
+const EXAMPLE = `Date,Round,Opponent,Location,Category,Grade,Time
+2026-05-02,Round 4,Wests,Home,Seniors,First Grade,15:00
+2026-05-02,Round 4,Wests,Home,Seniors,Reserve Grade,13:00
+2026-05-02,Round 4,Wests,Home,Womens,Womens League Tag,11:00
+2026-05-09,Round 5,Norths,Away,Seniors,First Grade,15:30
+2026-05-09,Round 5,Norths,Away,Seniors,Reserve Grade,13:30
+2026-05-16,Round 6,Brothers,Home,Seniors,First Grade,15:00
+2026-05-16,Round 6,Brothers,Home,Juniors,U/18,09:30
+2026-05-16,Round 6,Brothers,Home,Juniors,U/16,10:45`;
+
+// ─── Slug helpers ─────────────────────────────────────────────────────────────
+function toClubSlug(name) {
+  // Compact slug for @domain part: "North Beach FC" → "northbeachfc"
+  return (name || '').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mycal';
+}
+
+function toIdentSlug(str) {
+  // Hyphenated slug for identifier part: "Womens League Tag" → "womens-league-tag"
+  return (str || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'fixture';
+}
+
+// ─── UID Preview ─────────────────────────────────────────────────────────────
+function updateUIDPreview() {
+  const name = document.getElementById('clubName').value.trim();
+  const slug = toClubSlug(name) || 'mycal';
+  document.getElementById('clubSlugInput').value = slug + 'cal';
+  document.getElementById('uidPreview').innerHTML =
+    `fixture-YYYY-MM-DD-<span>category</span>@<span>${slug}cal</span>`;
+}
+
+// ─── Status ───────────────────────────────────────────────────────────────────
+function showStatus(msg, type='ok', duration=3500) {
+  const area = document.getElementById('status-area');
+  area.innerHTML = `<div class="banner banner-${type === 'ok' ? 'ok' : 'err'}">${msg}</div>`;
+  if (duration > 0) setTimeout(() => { area.innerHTML = ''; }, duration);
+}
+
+// ─── CSV Parsing ─────────────────────────────────────────────────────────────
+function parseCSVText(text) {
+  const lines = text.trim().split(/\r?\n/);
+  if (lines.length < 2) throw new Error('CSV must have a header row and at least one data row');
+
+  const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+  const col = name => headers.indexOf(name);
+
+  if (col('date') === -1)     throw new Error('Missing "Date" column');
+  if (col('opponent') === -1) throw new Error('Missing "Opponent" column');
+
+  const parsed = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const fields = parseCSVLine(line);
+    const get = k => (fields[col(k)] || '').trim();
+
+    const date = get('date'), opponent = get('opponent');
+    if (!date && !opponent) continue;
+
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date))
+      throw new Error(`Row ${i}: Invalid date "${date}" — use YYYY-MM-DD`);
+
+    const time = get('time');
+    if (time && !/^\d{1,2}:\d{2}$/.test(time))
+      throw new Error(`Row ${i}: Invalid time "${time}" — use HH:MM`);
+
+    parsed.push({
+      id: nextId++,
+      date,
+      round:    get('round'),
+      opponent,
+      location: get('location'),
+      category: get('category'),   // NEW
+      grade:    get('grade'),
+      time,
+    });
+  }
+  return parsed;
+}
+
+function parseCSVLine(line) {
+  const result = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQ = !inQ; continue; }
+    if (c === ',' && !inQ) { result.push(cur); cur = ''; continue; }
+    cur += c;
+  }
+  result.push(cur);
+  return result;
+}
+
+// ─── Table rendering ──────────────────────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('fixtureBody');
+  const countEl = document.getElementById('rowCount');
+  countEl.textContent = rows.length ? `${rows.length} row${rows.length !== 1 ? 's' : ''}` : '';
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text3);padding:32px">No fixtures loaded.</td></tr>`;
+    return;
+  }
+
+  const sorted = [...rows].sort((a, b) => {
+    const d = a.date.localeCompare(b.date);
+    return d !== 0 ? d : (a.time || '').localeCompare(b.time || '');
+  });
+
+  let lastDate = null, html = '';
+  for (const r of sorted) {
+    const isNew = r.date !== lastDate;
+    const dateCell = isNew
+      ? `<td style="font-weight:700;white-space:nowrap">${fmtDate(r.date)}</td>`
+      : `<td style="color:var(--text3)">″</td>`;
+    lastDate = r.date;
+
+    const locClass = r.location?.toLowerCase() === 'home' ? 'loc-home' : r.location?.toLowerCase() === 'away' ? 'loc-away' : '';
+    const timeHtml = r.time ? `<span class="time-val">${r.time}</span>` : `<span style="color:var(--text3);font-style:italic">TBC</span>`;
+    const catHtml  = r.category ? `<span class="cat-badge">${esc(r.category)}</span>` : `<span style="color:var(--text3)">—</span>`;
+    const topBorder = isNew ? 'border-top:2px solid var(--border)' : '';
+
+    html += `<tr style="${topBorder}">
+      ${dateCell}
+      <td style="color:var(--text2);font-size:.8125rem">${esc(r.round)}</td>
+      <td><strong>${esc(r.opponent)}</strong></td>
+      <td><span class="grade-badge ${locClass}">${esc(r.location)}</span></td>
+      <td>${catHtml}</td>
+      <td><span class="grade-badge" style="color:${gradeColor(r.grade)};border-color:${gradeColor(r.grade)}">${esc(r.grade) || '—'}</span></td>
+      <td>${timeHtml}</td>
+      <td class="td-del"><button class="btn-del" onclick="deleteRow(${r.id})" title="Delete">✕</button></td>
+    </tr>`;
+  }
+  tbody.innerHTML = html;
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  try {
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('en-AU', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+  } catch { return d; }
+}
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function gradeColor(grade) {
+  const g = (grade||'').toLowerCase();
+  if (g.includes('first')||g.includes('a grade')) return '#58a6ff';
+  if (g.includes('reserve')||g.includes('b grade')) return '#bc8cff';
+  if (g.includes('u/18')||g.includes('u18')) return '#3fb950';
+  if (g.includes('women')||g.includes('league tag')) return '#f0883e';
+  if (g.includes('u/16')||g.includes('u16')) return '#ffa657';
+  if (g.includes('u/14')||g.includes('u14')) return '#79c0ff';
+  return '#8b949e';
+}
+
+// ─── Actions ─────────────────────────────────────────────────────────────────
+function importCSV() {
+  const text = document.getElementById('csvInput').value.trim();
+  if (!text) { showStatus('Paste CSV text first or use the drop zone', 'err'); return; }
+  try {
+    rows = parseCSVText(text);
+    renderTable();
+    showStatus(`✓ Loaded ${rows.length} fixture rows`);
+  } catch(e) {
+    showStatus(`✗ ${e.message}`, 'err', 7000);
+  }
+}
+
+function loadExample() {
+  document.getElementById('csvInput').value = EXAMPLE;
+  importCSV();
+}
+
+function addRow() {
+  const date     = document.getElementById('newDate').value;
+  const round    = document.getElementById('newRound').value.trim();
+  const opponent = document.getElementById('newOpponent').value.trim();
+  const location = document.getElementById('newLocation').value;
+  const catSel   = document.getElementById('newCategory').value;
+  const category = catSel === '__custom__' ? '' : catSel;
+  const grade    = document.getElementById('newGrade').value;
+  const time     = document.getElementById('newTime').value;
+
+  if (!date)     { showStatus('Date is required', 'err', 3000); return; }
+  if (!opponent) { showStatus('Opponent is required', 'err', 3000); return; }
+
+  rows.push({ id: nextId++, date, round, opponent, location, category, grade, time });
+  renderTable();
+
+  // Keep date/round/opponent/location/category, clear grade+time
+  document.getElementById('newGrade').value = '';
+  document.getElementById('newTime').value  = '';
+  showStatus('✓ Row added', 'ok', 1500);
+}
+
+function deleteRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderTable();
+}
+
+function clearAll() {
+  if (!confirm('Clear all fixtures?')) return;
+  rows = [];
+  renderTable();
+}
+
+// ─── ICS Generation ───────────────────────────────────────────────────────────
+function groupKey(r) {
+  return r.category?.trim() || r.grade?.trim() || 'fixture';
+}
+
+function generateICS() {
+  const calName  = document.getElementById('clubName').value.trim() || 'Sports Fixtures';
+  const domain   = toClubSlug(calName) || 'mycal';
+  const dtstamp  = nowUTCStamp();
+
+  // Group rows by (date + groupKey)
+  const groups = new Map();
+  for (const r of rows) {
+    if (!r.date) continue;
+    const key = `${r.date}|${groupKey(r)}`;
+    if (!groups.has(key)) {
+      groups.set(key, { date:r.date, gk:groupKey(r), round:r.round, opponent:r.opponent, location:r.location, games:[] });
+    }
+    const g = groups.get(key);
+    if (r.round    && !g.round)    g.round    = r.round;
+    if (r.opponent && !g.opponent) g.opponent = r.opponent;
+    if (r.location && !g.location) g.location = r.location;
+    if (r.grade || r.time) g.games.push({ grade:r.grade||'', time:r.time||'' });
+  }
+
+  const fixtures = [...groups.values()]
+    .sort((a,b) => a.date.localeCompare(b.date) || a.gk.localeCompare(b.gk))
+    .map(f => ({ ...f, games: f.games.sort((a,b)=>(a.time||'').localeCompare(b.time||'')) }));
+
+  let events = '';
+  for (const f of fixtures) {
+    const times = f.games.map(g=>g.time).filter(Boolean).sort();
+    const startT = times[0] || '10:00';
+    const endT   = times[times.length-1] || startT;
+
+    const dtStart = fmtDT(f.date, startT);
+    const dtEnd   = fmtDTEnd(f.date, endT, 120);
+
+    // Stable UID: fixture-{date}-{category-slug}@{clubslug}cal
+    const uid = `fixture-${f.date}-${toIdentSlug(f.gk)}@${domain}cal`;
+
+    const locTag   = f.location ? ` [${f.location.toUpperCase()}]` : '';
+    const roundTag = f.round ? ` — ${f.round}` : '';
+    const vsTag    = f.opponent ? ` vs ${f.opponent}` : '';
+    const summary  = `${f.gk}${vsTag}${locTag}${roundTag}`;
+
+    const descLines = [];
+    if (f.round) descLines.push(f.round);
+    descLines.push('');
+    if (f.games.length > 0) {
+      const distinctGrades = [...new Set(f.games.map(g=>g.grade).filter(Boolean))];
+      if (distinctGrades.length === 1 && distinctGrades[0] === f.gk) {
+        for (const g of f.games) descLines.push(`Kick-off: ${fmtTimeDisplay(g.time)}`);
+      } else {
+        descLines.push('KICK-OFF TIMES:');
+        for (const g of f.games) descLines.push(`  • ${g.grade || f.gk}: ${fmtTimeDisplay(g.time)}`);
+      }
+    } else { descLines.push('Match details TBC'); }
+    if (f.location) { descLines.push(''); descLines.push(`Location: ${f.location}`); }
+    if (f.opponent) descLines.push(`Opponent: ${f.opponent}`);
+    descLines.push(''); descLines.push('—'); descLines.push('Generated by Sports ICS Generator');
+
+    const desc = descLines.join('\\n');
+    events += [
+      'BEGIN:VEVENT',
+      `UID:${uid}`,
+      `DTSTAMP:${dtstamp}`,
+      `DTSTART:${dtStart}`,
+      `DTEND:${dtEnd}`,
+      `SUMMARY:${icsEsc(summary)}`,
+      `DESCRIPTION:${icsEsc(desc)}`,
+      f.location ? `LOCATION:${icsEsc(f.location)}` : '',
+      'END:VEVENT',
+    ].filter(Boolean).join('\r\n') + '\r\n';
+  }
+
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//SportsICSCal//ICS Generator 1.0//EN',
+    `X-WR-CALNAME:${icsEsc(calName)}`,
+    `X-WR-CALDESC:${icsEsc(calName + ' fixtures')}`,
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    events.trim(),
+    'END:VCALENDAR',
+  ].join('\r\n') + '\r\n';
+}
+
+// ─── ICS helpers ──────────────────────────────────────────────────────────────
+function fmtDT(dateStr, timeStr) {
+  const [y,m,d] = dateStr.split('-');
+  const [h,min] = (timeStr||'10:00').split(':');
+  return `${y}${m.padStart(2,'0')}${d.padStart(2,'0')}T${h.padStart(2,'0')}${min.padStart(2,'0')}00`;
+}
+function fmtDTEnd(dateStr, timeStr, addMins) {
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const [h,min] = (timeStr||'10:00').split(':').map(Number);
+  const dt = new Date(y,m-1,d,h,min+addMins,0);
+  const p = n => String(n).padStart(2,'0');
+  return `${dt.getFullYear()}${p(dt.getMonth()+1)}${p(dt.getDate())}T${p(dt.getHours())}${p(dt.getMinutes())}00`;
+}
+function nowUTCStamp() {
+  const d = new Date(); const p = n=>String(n).padStart(2,'0');
+  return `${d.getUTCFullYear()}${p(d.getUTCMonth()+1)}${p(d.getUTCDate())}T${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}Z`;
+}
+function icsEsc(s) {
+  return (s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n').replace(/\r/g,'');
+}
+function fmtTimeDisplay(time) {
+  if (!time) return 'TBC';
+  const [h,m] = time.split(':'); const hour = parseInt(h,10);
+  return `${hour>12?hour-12:hour||12}:${m}${hour>=12?'pm':'am'}`;
+}
+
+// ─── Downloads ───────────────────────────────────────────────────────────────
+function downloadICS() {
+  if (!rows.length) { showStatus('No fixtures to export', 'err'); return; }
+  try {
+    triggerDownload(generateICS(), 'calendar.ics', 'text/calendar;charset=utf-8');
+    showStatus('✓ calendar.ics downloaded');
+  } catch(e) { showStatus(`✗ ${e.message}`, 'err'); }
+}
+
+function downloadCSV() {
+  if (!rows.length) { showStatus('No fixtures to export', 'err'); return; }
+  const sorted = [...rows].sort((a,b)=>a.date.localeCompare(b.date)||(a.time||'').localeCompare(b.time||''));
+  const header = 'Date,Round,Opponent,Location,Category,Grade,Time\n';
+  const lines  = sorted.map(r =>
+    [r.date,r.round,r.opponent,r.location,r.category,r.grade,r.time]
+      .map(v=>(v||'').includes(',') ? `"${v}"` : (v||'')).join(',')
+  ).join('\n');
+  triggerDownload(header+lines, 'fixtures.csv', 'text/csv;charset=utf-8');
+  showStatus('✓ fixtures.csv downloaded');
+}
+
+function triggerDownload(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+}
+
+// ─── File drop / upload ───────────────────────────────────────────────────────
+const dropZone  = document.getElementById('dropZone');
+const fileInput = document.getElementById('csvFile');
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('over');
+  if (e.dataTransfer.files[0]) readFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) readFile(fileInput.files[0]); fileInput.value=''; });
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => { document.getElementById('csvInput').value = e.target.result; importCSV(); };
+  reader.onerror = () => showStatus('✗ Failed to read file', 'err');
+  reader.readAsText(file);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+renderTable();
+updateUIDPreview();
+</script>
+</body>
+</html>

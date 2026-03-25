@@ -1,0 +1,6 @@
+# Used by the backend build (context = ./backend)
+node_modules/
+data/
+*.md
+.env
+.env.local
