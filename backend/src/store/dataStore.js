@@ -79,6 +79,14 @@ export const store = {
     return rows;
   },
 
+  /** Append new rows without touching existing rows or their IDs */
+  appendAll(newRows) {
+    const added = newRows.map(r => ({ ...r, id: uuidv4() }));
+    rows = [...rows, ...added];
+    save(rows);
+    return added;
+  },
+
   /** Clear all data */
   clear() {
     rows = [];

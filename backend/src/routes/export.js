@@ -26,6 +26,20 @@ router.post('/import/csv', upload.single('file'), (req, res) => {
   }
 });
 
+// POST /api/import/csv/append — add fixtures from CSV without touching existing rows
+router.post('/import/csv/append', upload.single('file'), (req, res) => {
+  try {
+    let csvText = req.file ? req.file.buffer.toString('utf-8') : req.body.csv;
+    if (!csvText) return res.status(400).json({ error: 'No CSV data provided.' });
+
+    const rows = parseCSV(csvText);
+    const added = store.appendAll(rows);
+    res.json({ success: true, imported: added.length, message: `Appended ${added.length} fixture rows` });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // GET /api/export/csv — download all fixtures as CSV
 router.get('/export/csv', (req, res) => {
   const rows = store.getAll();

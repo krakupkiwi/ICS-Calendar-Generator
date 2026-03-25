@@ -40,6 +40,12 @@ export const api = {
     return request('POST', '/import/csv', fd, true);
   },
 
+  appendCSV: (file) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return request('POST', '/import/csv/append', fd, true);
+  },
+
   // Export
   exportCSV:      ()                        => request('GET', '/export/csv'),
   exportTemplate: ()                        => request('GET', '/export/template'),

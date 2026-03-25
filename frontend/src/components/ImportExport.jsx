@@ -6,6 +6,7 @@ const SETTINGS_KEYS = ['clubName', 'githubToken', 'githubRepo', 'githubBranch', 
 
 export default function ImportExport({ clubName, onImport, onClear, onSettingsImport }) {
   const fileRef     = useRef();
+  const appendRef   = useRef();
   const settingsRef = useRef();
   const [status, setStatus] = useState(null);
   const [busy,   setBusy]   = useState(false);
@@ -26,6 +27,18 @@ export default function ImportExport({ clubName, onImport, onClear, onSettingsIm
       flash('success', `✓ Imported ${result.imported} rows from ${file.name}`);
       onImport?.();
     } catch (err) { flash('error', `✗ Import failed: ${err.message}`); }
+    finally { setBusy(false); e.target.value = ''; }
+  }
+
+  async function handleCSVAppend(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setBusy(true);
+    try {
+      const result = await api.appendCSV(file);
+      flash('success', `✓ Appended ${result.imported} rows from ${file.name}`);
+      onImport?.();
+    } catch (err) { flash('error', `✗ Append failed: ${err.message}`); }
     finally { setBusy(false); e.target.value = ''; }
   }
 
@@ -107,8 +120,12 @@ export default function ImportExport({ clubName, onImport, onClear, onSettingsIm
       <div className={styles.group}>
         <span className={styles.groupLabel}>Import</span>
         <input ref={fileRef} type="file" accept=".csv,text/csv" onChange={handleCSVImport} style={{ display:'none' }} />
-        <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => fileRef.current.click()} disabled={busy}>
+        <input ref={appendRef} type="file" accept=".csv,text/csv" onChange={handleCSVAppend} style={{ display:'none' }} />
+        <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => fileRef.current.click()} disabled={busy} title="Replace ALL existing fixtures with this CSV">
           📂 Import CSV
+        </button>
+        <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => appendRef.current.click()} disabled={busy} title="Add fixtures from this CSV without removing existing ones">
+          ➕ Append CSV
         </button>
         <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={handleDownloadTemplate} disabled={busy} title="Download empty CSV with correct headers">
           📋 Get Template
